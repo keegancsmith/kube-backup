@@ -110,6 +110,11 @@ git add .
 
 if ! git diff-index --quiet HEAD --; then
     git commit -m "Automatic backup at $(date)"
+    # Rebase in case someone else has pushed to another dir in the meantime
+    if git rev-parse "origin/${GIT_BRANCH}" >/dev/null 2>&1; then
+        git fetch origin "${GIT_BRANCH}"
+        git rebase "origin/${GIT_BRANCH}"
+    fi
     git push origin "${GIT_BRANCH}"
 else
     echo "No change"
