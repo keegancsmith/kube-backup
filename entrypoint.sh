@@ -29,6 +29,12 @@ fi
 cd "$GIT_REPO_PATH"
 [ -z "$DRY_RUN" ] && (git checkout "${GIT_BRANCH}" || git checkout -b "${GIT_BRANCH}")
 
+# If the job failed we may have unpushed state lying around on this run.
+if [ -z "$DRY_RUN" ] && git rev-parse "origin/${GIT_BRANCH}" >/dev/null 2>&1; then
+    git fetch origin "${GIT_BRANCH}"
+    git reset --hard "origin/${GIT_BRANCH}"
+fi
+
 mkdir -p "$GIT_REPO_PATH/$GIT_PREFIX_PATH"
 cd "$GIT_REPO_PATH/$GIT_PREFIX_PATH"
 
